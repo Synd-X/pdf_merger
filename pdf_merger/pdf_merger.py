@@ -1,6 +1,8 @@
 import os
 import re
 import argparse
+from pathlib import Path
+
 from PyPDF2 import PdfMerger
 
 
@@ -46,22 +48,21 @@ def confirm_merge(sorted_pdfs):
 
     return input("\nDo you want to proceed with merging these files? (yes/no): ").strip().lower() == 'yes'
 
-
 def merge_pdfs(input_folder, output_file, sorted_pdfs, custom_titles=None):
     """Merges the sorted PDFs into the output file and adds bookmarks as a Table of Contents."""
     merger = PdfMerger()
     current_page = 0  # To track the current page number for bookmarks
 
     for idx, (pdf_file, _) in enumerate(sorted_pdfs):
-        pdf_path = os.path.join(input_folder, pdf_file)
+        # Convert to a Path object
+        pdf_path = Path(input_folder) / pdf_file
 
         # Append the PDF file
-        merger.append(pdf_path)
+        merger.append(str(pdf_path))  # Ensure it's passed as a string
 
         # Add a bookmark for the beginning of this PDF file
-        bookmark_title = custom_titles[idx] if custom_titles and idx < len(custom_titles) else \
-        os.path.splitext(pdf_file)[0]
-        merger.add_bookmark(bookmark_title, current_page)
+        bookmark_title = custom_titles[idx] if custom_titles and idx < len(custom_titles) else pdf_path.stem
+        merger.add_outline_item(bookmark_title, current_page)
         print(f"Adding {pdf_file} to the merged PDF with bookmark title: '{bookmark_title}'.")
 
         # Update the current page number after adding the file
