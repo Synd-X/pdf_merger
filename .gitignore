@@ -1,0 +1,10 @@
+# Ignore IDE-related files
+.idea/
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
+
+# Optional: Ignore virtual environments (if applicable)
+.venv/
